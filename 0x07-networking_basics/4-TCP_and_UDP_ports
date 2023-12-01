@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Run netstat command to get listening sockets with PID and program name
+netstat -tuln | awk '
+    # Filter lines containing "LISTEN" and skip the first line (header)
+    /LISTEN/ && NR > 1 {
+        # Store protocol, local address, and PID
+        proto=$1;
+        local_addr=$4;
+        pid=$NF;
+
+        # Extract only the port number
+        split(local_addr, arr, ":");
+        port=arr[length(arr)];
+
+        # Get the program name using PID
+        cmd=sprintf("cat /proc/%s/cmdline 2>/dev/null", pid);
+        cmd | getline program;
+        close(cmd);
+
+        # Print the relevant information
+        printf "%s\t%s\t%s/%s\n", proto, local_addr, pid, program;
+    }
