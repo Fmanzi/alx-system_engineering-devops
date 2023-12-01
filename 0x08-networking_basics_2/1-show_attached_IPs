@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# This script displays all active IPv4 IPs on the machine
+
+# Use ifconfig to get IPv4 addresses and filter for 'inet' lines
+ifconfig | grep -oP 'inet\s+\K[\d.]+'
